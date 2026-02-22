@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart E-Note</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gray-50">
+
+    <!-- Header Section -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div class="text-center">
+                <div
+                    class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-indigo-600 rounded-2xl mb-3 sm:mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="white" class="w-8 h-8 sm:w-9 sm:h-9">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6.042A8.967 8.967 0 006 3.75c-1.036 0-2.04.186-3 .534V18a10.5 10.5 0 013-.534c2.032 0 3.98.6 5.75 1.63m.25-13.054A8.967 8.967 0 0118 3.75c1.036 0 2.04.186 3 .534V18a10.5 10.5 0 00-3-.534c-2.032 0-3.98.6-5.75 1.63m0-13.054v13.054" />
+                    </svg>
+                </div>
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+                    Smart E-Note
+                </h1>
+                <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+                    Learn English smarter with programs, lessons, and daily notes
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+
+            <!-- Programs Card -->
+            <a href="{{ url_for('programs') }}"
+                class="group block bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-gray-200 hover:border-indigo-500 hover:shadow-lg active:scale-[0.98] transition-all">
+
+                <div class="flex items-start gap-4 sm:gap-5">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-indigo-50 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:bg-indigo-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-6 h-6 sm:w-7 sm:h-7 text-indigo-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6.042A8.967 8.967 0 006 3.75c-1.036 0-2.04.186-3 .534V18a10.5 10.5 0 013-.534c2.032 0 3.98.6 5.75 1.63m.25-13.054A8.967 8.967 0 0118 3.75c1.036 0 2.04.186 3 .534V18a10.5 10.5 0 00-3-.534c-2.032 0-3.98.6-5.75 1.63m0-13.054v13.054" />
+                        </svg>
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                        <h2
+                            class="text-xl sm:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2 group-hover:text-indigo-600">
+                            Programs
+                        </h2>
+                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                            Structured learning programs with lessons, words, and sentences.
+                        </p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- General Card -->
+            <a href="/general"
+                class="group block bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-gray-200 hover:border-purple-500 hover:shadow-lg active:scale-[0.98] transition-all">
+
+                <div class="flex items-start gap-4 sm:gap-5">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-purple-50 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:bg-purple-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-6 h-6 sm:w-7 sm:h-7 text-purple-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                        </svg>
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                        <h2
+                            class="text-xl sm:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2 group-hover:text-purple-600">
+                            General
+                        </h2>
+                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                            Collect general words and sentences for daily learning.
+                        </p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Language Assistant Card -->
+            <a href="/assistant"
+                class="group block bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-gray-200 hover:border-green-500 hover:shadow-lg active:scale-[0.98] transition-all">
+
+                <div class="flex items-start gap-4 sm:gap-5">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-green-50 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:bg-green-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-6 h-6 sm:w-7 sm:h-7 text-green-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.243-.949L3 20l1.05-4.243A9.863 9.863 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                        <h2
+                            class="text-xl sm:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2 group-hover:text-green-600">
+                            Language Assistant
+                        </h2>
+                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                            Chat with AI assistant to learn English in real-time.
+                        </p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Quick Quiz Card -->
+            <a href="/quiz"
+                class="group block bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-gray-200 hover:border-amber-500 hover:shadow-lg active:scale-[0.98] transition-all">
+
+                <div class="flex items-start gap-4 sm:gap-5">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-amber-50 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:bg-amber-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-6 h-6 sm:w-7 sm:h-7 text-amber-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                        </svg>
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                        <h2
+                            class="text-xl sm:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2 group-hover:text-amber-600">
+                            Quick Quiz
+                        </h2>
+                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                            Test your English skills with AI-generated quizzes.
+                        </p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Pronunciation Card (Centered) -->
+            <a href="/pronunciation/compare"
+                class="group block bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 border-2 border-gray-200 hover:border-blue-500 hover:shadow-lg active:scale-[0.98] transition-all sm:col-span-2 max-w-3xl mx-auto w-full">
+
+                <div class="flex items-start gap-4 sm:gap-5">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 sm:w-14 sm:h-14 bg-blue-50 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:bg-blue-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-6 h-6 sm:w-7 sm:h-7 text-blue-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                        </svg>
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                        <h2
+                            class="text-xl sm:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2 group-hover:text-blue-600">
+                            Pronunciation Practice
+                        </h2>
+                        <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                            Improve your pronunciation by reading texts, comparing speech, and getting AI feedback.
+                        </p>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 text-center">
+        <p class="text-gray-500 text-xs sm:text-sm">
+            © 2024 Smart E-Note. Your companion for learning English.
+        </p>
+    </div>
+
+</body>
+
+</html>

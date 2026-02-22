@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}Add Lesson - Smart E-Note{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl w-full mx-auto px-4">
+    <!-- Page Header -->
+    <div class="bg-white rounded-lg border border-gray-200 px-6 py-4 mb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-6 h-6 text-indigo-600">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Add New Lesson</h1>
+                <p class="text-sm text-gray-500">Create lesson content with vocabulary, expressions, and notes</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <form method="post" action="{{ url_for('add_lesson', program_id=selected_program.id) }}"
+        onsubmit="return validateForm()" class="bg-white rounded-lg border border-gray-200 p-6 space-y-8">
+
+        {{ csrf_field() if csrf_enabled else "" }}
+
+        <!-- Lesson Title -->
+        <section>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                Lesson Title <span class="text-red-500">*</span>
+            </label>
+            <input type="text" name="title" id="lesson-title" placeholder="e.g. Daily Activities"
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <p id="title-error" class="text-red-500 text-xs mt-1 hidden">
+                Lesson title is required.
+            </p>
+        </section>
+
+        <!-- Divider -->
+        <div class="border-t border-gray-200"></div>
+
+        <!-- Vocabulary -->
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-7 h-7 bg-indigo-50 rounded-lg flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4 text-indigo-600">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6.042A8.967 8.967 0 006 3.75c-1.036 0-2.04.186-3 .534V18a10.5 10.5 0 013-.534c2.032 0 3.98.6 5.75 1.63m.25-13.054A8.967 8.967 0 0118 3.75c1.036 0 2.04.186 3 .534V18a10.5 10.5 0 00-3-.534c-2.032 0-3.98.6-5.75 1.63m0-13.054v13.054" />
+                    </svg>
+                </div>
+                <h2 class="text-base font-semibold text-gray-800">Vocabulary</h2>
+            </div>
+
+            <div id="vocab-container" class="space-y-2">
+                <div class="flex gap-2">
+                    <input type="text"
+                        class="vocab-input flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        placeholder="Add vocabulary word">
+                    <button type="button" onclick="removeInput(this)"
+                        class="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Remove">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" onclick="addInput('vocab-container', 'vocab-input')"
+                class="mt-2 text-sm text-indigo-600 font-medium hover:text-indigo-700 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add another word
+            </button>
+
+            <p id="vocab-error" class="text-red-500 text-xs mt-2 hidden">
+                Please add at least one vocabulary word.
+            </p>
+
+            <input type="hidden" name="vocab" id="vocab-hidden">
+        </section>
+
+        <!-- Divider -->
+        <div class="border-t border-gray-200"></div>
+
+        <!-- Expressions -->
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4 text-green-600">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                    </svg>
+                </div>
+                <h2 class="text-base font-semibold text-gray-800">Expressions</h2>
+            </div>
+
+            <div id="expressions-container" class="space-y-2">
+                <div class="flex gap-2">
+                    <input type="text"
+                        class="expressions-input flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        placeholder="Add expression">
+                    <button type="button" onclick="removeInput(this)"
+                        class="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Remove">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" onclick="addInput('expressions-container', 'expressions-input')"
+                class="mt-2 text-sm text-green-600 font-medium hover:text-green-700 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add another expression
+            </button>
+
+            <input type="hidden" name="expressions" id="expressions-hidden">
+        </section>
+
+        <!-- Divider -->
+        <div class="border-t border-gray-200"></div>
+
+        <!-- Notes -->
+        <section>
+            <div class="flex items-center gap-2 mb-3">
+                <div class="w-7 h-7 bg-amber-50 rounded-lg flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4 text-amber-600">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                    </svg>
+                </div>
+                <h2 class="text-base font-semibold text-gray-800">Notes</h2>
+            </div>
+
+            <div id="notes-container" class="space-y-2">
+                <div class="flex gap-2">
+                    <textarea rows="3"
+                        class="notes-input flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                        placeholder="Add note"></textarea>
+                    <button type="button" onclick="removeInput(this)"
+                        class="p-2 text-red-500 hover:bg-red-50 rounded-lg self-start" title="Remove">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button type="button" onclick="addInput('notes-container', 'notes-input', true)"
+                class="mt-2 text-sm text-amber-600 font-medium hover:text-amber-700 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Add another note
+            </button>
+
+            <input type="hidden" name="notes" id="notes-hidden">
+        </section>
+
+        <!-- Submit -->
+        <div class="pt-6 border-t border-gray-200 flex justify-between">
+            <a href="{{ url_for('programs', program_id=selected_program.id) }}"
+                class="px-4 py-2 text-sm rounded-lg border border-gray-300 font-medium text-gray-700 hover:bg-gray-50">
+                Cancel
+            </a>
+            <button id="submit-btn" type="submit"
+                class="px-6 py-2 text-sm bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+                Save Lesson
+            </button>
+        </div>
+
+    </form>
+</div>
+<script>
+    function addInput(containerId, className, isTextarea = false) {
+        const container = document.getElementById(containerId);
+        const wrapper = document.createElement("div");
+        wrapper.className = "flex gap-2";
+
+        let input = isTextarea ? document.createElement("textarea") : document.createElement("input");
+        if (!isTextarea) input.type = "text";
+        if (isTextarea) input.rows = 3;
+
+        let focusRing = 'focus:ring-indigo-500';
+        if (className.includes('expressions')) focusRing = 'focus:ring-green-500';
+        if (className.includes('notes')) focusRing = 'focus:ring-amber-500';
+
+        input.className = `${className} flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 ${focusRing} focus:outline-none`;
+        input.placeholder = "Add more...";
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "p-2 text-red-500 hover:bg-red-50 rounded-lg" + (isTextarea ? " self-start" : "");
+        removeBtn.title = "Remove";
+        removeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>`;
+        removeBtn.onclick = () => wrapper.remove();
+
+        wrapper.appendChild(input);
+        wrapper.appendChild(removeBtn);
+        container.appendChild(wrapper);
+    }
+
+    function removeInput(btn) {
+        btn.parentElement.remove();
+    }
+
+    function collectValues(className) {
+        return Array.from(document.getElementsByClassName(className))
+            .map(el => el.value.trim())
+            .filter(v => v !== "")
+            .join("|||");
+    }
+
+    function validateForm() {
+        let valid = true;
+
+        const title = document.getElementById("lesson-title");
+        const titleError = document.getElementById("title-error");
+        const vocabError = document.getElementById("vocab-error");
+
+        titleError.classList.add("hidden");
+        vocabError.classList.add("hidden");
+
+        if (title.value.trim() === "") {
+            titleError.classList.remove("hidden");
+            valid = false;
+        }
+
+        const vocab = collectValues("vocab-input");
+        if (!vocab) {
+            vocabError.classList.remove("hidden");
+            valid = false;
+        }
+
+        if (!valid) return false;
+
+        document.getElementById("vocab-hidden").value = vocab;
+        document.getElementById("expressions-hidden").value = collectValues("expressions-input");
+        document.getElementById("notes-hidden").value = collectValues("notes-input");
+
+        const submitBtn = document.getElementById("submit-btn");
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg> Saving...`;
+
+        return true;
+    }
+</script>
+
+{% endblock %}

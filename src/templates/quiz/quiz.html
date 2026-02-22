@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Quiz - Smart E-Note</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-3xl mx-auto mt-4 sm:mt-6 px-3 sm:px-4 pb-6">
+
+        <!-- Quiz Header -->
+        <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-4 sm:mb-6">
+            <div class="flex items-center justify-between gap-3">
+
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-9 h-9 sm:w-10 sm:h-10 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6 text-amber-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold text-gray-800">Quick Quiz</h1>
+                        <p class="text-xs text-gray-500">Test your English knowledge</p>
+                    </div>
+                </div>
+
+                <button onclick="exitQuiz()"
+                    class="px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg border border-gray-300 font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span class="hidden sm:inline">Exit</span>
+                </button>
+            </div>
+        </div>
+
+        {% if quiz %}
+        <div class="bg-white rounded-lg border border-gray-200 p-4 sm:p-6">
+
+            <!-- Progress -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between text-xs text-gray-600 mb-2">
+                    <span class="font-medium">Progress</span>
+                    <span id="progress-text" class="font-medium">0 / {{ quiz|length }}</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="progress-bar" class="bg-amber-500 h-2 rounded-full transition-all duration-300"
+                        style="width:0%"></div>
+                </div>
+            </div>
+
+            <!-- Quiz -->
+            <div id="quiz-container"></div>
+
+            <!-- Next Button -->
+            <div class="mt-6 flex justify-end">
+                <button id="nextBtn" onclick="nextQuestion()"
+                    class="bg-amber-600 text-white w-full sm:w-auto px-6 py-2.5 text-sm rounded-lg font-medium hover:bg-amber-700 hidden flex items-center justify-center gap-2">
+                    <span>Next</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const quizData = {{ quiz | tojson | safe }};
+        let current = 0;
+        let score = 0;
+        let answered = false;
+
+        function renderQuestion() {
+            answered = false;
+            document.getElementById("nextBtn").classList.add("hidden");
+
+            const q = quizData[current];
+
+            document.getElementById("progress-bar").style.width =
+                (current / quizData.length) * 100 + "%";
+            document.getElementById("progress-text").textContent =
+                `${current} / ${quizData.length}`;
+
+            let html = `
+                <div class="mb-6">
+                    <div class="flex items-start gap-3 mb-4">
+                        <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <span class="text-amber-600 font-semibold text-sm">${current + 1}</span>
+                        </div>
+                        <h2 class="font-semibold text-sm sm:text-base text-gray-800 pt-1">
+                            ${q.question}
+                        </h2>
+                    </div>
+                    
+                    <div class="space-y-2 pl-11">
+            `;
+
+            q.options.forEach((opt, i) => {
+                html += `
+                    <button onclick="selectAnswer(${i})"
+                        class="option block w-full text-left border border-gray-300 rounded-lg px-4 py-3 text-sm hover:bg-gray-50 hover:border-gray-400 transition-all">
+                        ${opt}
+                    </button>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+
+                <div id="explanation" class="hidden pl-11">
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                        </svg>
+                        <p class="text-sm text-red-700">${q.explanation || "Incorrect answer"}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("quiz-container").innerHTML = html;
+        }
+
+        function selectAnswer(index) {
+            if (answered) return;
+            answered = true;
+
+            const q = quizData[current];
+            const buttons = document.querySelectorAll(".option");
+
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.classList.remove("hover:bg-gray-50", "hover:border-gray-400");
+
+                if (i === q.correct_index) {
+                    btn.classList.remove("border-gray-300");
+                    btn.classList.add("bg-green-50", "border-green-500", "text-green-800");
+                    btn.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span>${q.options[i]}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-green-600 flex-shrink-0">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    `;
+                }
+
+                if (i === index && i !== q.correct_index) {
+                    btn.classList.remove("border-gray-300");
+                    btn.classList.add("bg-red-50", "border-red-500", "text-red-800");
+                    btn.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span>${q.options[i]}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-red-600 flex-shrink-0">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    `;
+                    document.getElementById("explanation").classList.remove("hidden");
+                }
+            });
+
+            if (index === q.correct_index) score++;
+            document.getElementById("nextBtn").classList.remove("hidden");
+        }
+
+        function nextQuestion() {
+            current++;
+            if (current >= quizData.length) {
+                const percentage = Math.round((score / quizData.length) * 100);
+
+                document.getElementById("quiz-container").innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-amber-600">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Quiz Completed!</h2>
+                        <p class="text-gray-600 mb-4">Great job finishing the quiz</p>
+                        <div class="bg-amber-50 rounded-lg p-6 inline-block">
+                            <p class="text-sm text-gray-600 mb-1">Your Score</p>
+                            <p class="text-4xl font-bold text-amber-600">${score} / ${quizData.length}</p>
+                            <p class="text-sm text-gray-600 mt-1">${percentage}%</p>
+                        </div>
+                        <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                            <button onclick="window.location.href='/quiz'" class="bg-amber-600 text-white px-6 py-2.5 text-sm rounded-lg font-medium hover:bg-amber-700">
+                                Try Another Quiz
+                            </button>
+                            <button onclick="window.location.href='/'" class="bg-gray-100 text-gray-700 px-6 py-2.5 text-sm rounded-lg font-medium hover:bg-gray-200 border border-gray-300">
+                                Back to Home
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById("nextBtn").classList.add("hidden");
+                document.getElementById("progress-bar").style.width = "100%";
+                document.getElementById("progress-text").textContent =
+                    `${quizData.length} / ${quizData.length}`;
+                return;
+            }
+            renderQuestion();
+        }
+
+        function exitQuiz() {
+            if (current > 0 && current < quizData.length) {
+                if (confirm("Are you sure you want to exit? Your progress will be lost.")) {
+                    window.location.href = "/";
+                }
+            } else {
+                window.location.href = "/";
+            }
+        }
+
+        if (quizData.length > 0) renderQuestion();
+    </script>
+</body>
+
+</html>

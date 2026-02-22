@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Programs - Smart E-Note{% endblock %}
+
+{% block content %}
+
+<div class="flex flex-col lg:flex-row gap-6 min-h-[calc(100vh-180px)]">
+
+    <!-- ================= MOBILE PROGRAM SELECTOR ================= -->
+    <div class="lg:hidden bg-white rounded-lg border border-gray-200 p-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+            Select Program
+        </label>
+
+        <select onchange="if(this.value) window.location.href=this.value"
+            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+            <option value="">Choose program</option>
+            {% for program in programs %}
+            <option value="/programs?program_id={{ program.id }}" {% if selected_program and
+                program.id==selected_program.id %}selected{% endif %}>
+                {{ program.title }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button onclick="openModal()"
+            class="mt-3 w-full bg-indigo-600 text-white text-sm py-2 rounded-lg font-medium hover:bg-indigo-700">
+            + New Program
+        </button>
+    </div>
+
+    <!-- ================= SIDEBAR (DESKTOP ONLY) ================= -->
+    <aside
+        class="hidden lg:flex w-64 bg-white rounded-lg border border-gray-200 flex-col h-[calc(100vh-130px)] sticky top-24">
+
+        <div class="px-5 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-800">My Programs</h2>
+        </div>
+
+        <div class="py-2 flex-1 overflow-y-auto">
+            {% if programs %}
+            {% for program in programs %}
+            <a href="/programs?program_id={{ program.id }}" class="block px-5 py-2.5 text-sm hover:bg-gray-50
+               {% if selected_program and program.id == selected_program.id %}
+                   bg-indigo-50 text-indigo-700 font-medium
+               {% else %}
+                   text-gray-700
+               {% endif %}">
+                {{ program.title }}
+            </a>
+            {% endfor %}
+            {% else %}
+            <div class="px-5 py-8 text-center">
+                <p class="text-gray-400 text-sm">No programs yet</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="border-t border-gray-200"></div>
+
+        <div class="px-5 py-4">
+            <button onclick="openModal()"
+                class="w-full bg-indigo-600 text-white text-sm py-2 rounded-lg font-medium hover:bg-indigo-700">
+                + New Program
+            </button>
+        </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="flex-1 flex flex-col">
+
+        {% if selected_program %}
+
+        <!-- HEADER -->
+        <div class="bg-white rounded-lg border border-gray-200 px-4 sm:px-6 py-4 mb-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold text-gray-800">
+                        {{ selected_program.title }}
+                    </h1>
+                    <p class="text-sm text-gray-500">
+                        {% if lessons %}{{ lessons|length }} lessons{% else %}No lessons{% endif %}
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+
+                    <!-- SEARCH -->
+                    <form method="get" class="flex gap-2 w-full sm:w-auto">
+                        <input type="hidden" name="program_id" value="{{ selected_program.id }}">
+                        <input type="text" name="search" value="{{ search }}" placeholder="Search..."
+                            class="w-full sm:w-48 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500">
+                        <button class="bg-gray-100 px-4 py-2 text-sm rounded-lg font-medium hover:bg-gray-200">
+                            Search
+                        </button>
+                    </form>
+
+                    <!-- ADD LESSON -->
+                    <a href="{{ url_for('add_lesson', program_id=selected_program.id) }}"
+                        class="w-full sm:w-auto text-center bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700">
+                        + Add Lesson
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- LESSONS -->
+        <div class="overflow-y-auto max-h-[calc(100vh-260px)] sm:max-h-[calc(100vh-210px)]">
+            {% if lessons %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for lesson in lessons %}
+                <div class="bg-white rounded-lg border border-gray-200 p-4 hover:border-indigo-300 hover:shadow-sm">
+                    <h3 class="font-semibold text-gray-800 mb-1">
+                        {{ lesson.title }}
+                    </h3>
+                    <p class="text-xs text-gray-500 mb-3">
+                        {{ lesson.date.strftime("%d %b %Y") }}
+                    </p>
+                    <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}"
+                        class="text-sm text-indigo-600 font-medium hover:text-indigo-700">
+                        View →
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+                <p class="text-gray-400">No lessons yet</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% else %}
+        <div class="bg-white rounded-lg border border-gray-200 p-12 text-center">
+            <p class="text-gray-400">Select a program to get started</p>
+        </div>
+        {% endif %}
+
+    </main>
+</div>
+
+<!-- ================= ADD PROGRAM MODAL ================= -->
+<div id="addProgramModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg w-full max-w-md mx-4">
+        <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-lg">Add New Program</h2>
+        </div>
+
+        <form action="/programs/add" method="post">
+            <div class="p-6">
+                <input type="text" name="title" required
+                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Program name">
+            </div>
+
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-2">
+                <button type="button" onclick="closeModal()" class="px-4 py-2 border rounded-lg">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+                    Add
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal() {
+        addProgramModal.classList.remove("hidden");
+        addProgramModal.classList.add("flex");
+    }
+    function closeModal() {
+        addProgramModal.classList.add("hidden");
+        addProgramModal.classList.remove("flex");
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }} - Smart E-Note{% endblock %}
+
+{% block content %}
+
+<style>
+    .lesson-text::selection {
+        background-color: #c7d2fe;
+        color: #1e3a8a;
+    }
+</style>
+
+<div class="max-w-5xl w-full mx-auto px-4">
+
+    <!-- Header -->
+    <div class="bg-white rounded-lg border border-gray-200 px-4 sm:px-6 py-5 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+
+            <!-- Title -->
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-800 mb-1">
+                    {{ lesson.title }}
+                </h1>
+                <p class="text-sm text-gray-500">
+                    {{ lesson.date.strftime("%d %b %Y") if lesson.date else "" }}
+                </p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+
+                <a href="{{ url_for('programs', program_id=lesson.program_id) }}"
+                    class="w-full sm:w-auto text-center px-4 py-2 text-sm rounded-lg border border-gray-300 font-medium text-gray-700 hover:bg-gray-50">
+                    ← Back
+                </a>
+
+                <a href="{{ url_for('edit_lesson', lesson_id=lesson.id) }}"
+                    class="w-full sm:w-auto px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                    </svg>
+                    Edit
+                </a>
+
+                <form id="quickQuizForm" method="POST" action="/quiz/quick_quiz" class="w-full sm:w-auto">
+                    <input type="hidden" name="content" id="quizContent">
+                    <button type="button" onclick="submitQuickQuiz()"
+                        class="w-full sm:w-auto px-4 py-2 text-sm bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v12a2 2 0 01-2 2z" />
+                        </svg>
+                        Quick Quiz
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- Vocabulary Section -->
+    <section class="bg-white rounded-lg border border-gray-200 p-5 mb-6">
+
+        <!-- Section Header -->
+        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
+            <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5 text-indigo-600">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 6.042A8.967 8.967 0 006 3.75c-1.036 0-2.04.186-3 .534V18a10.5 10.5 0 013-.534c2.032 0 3.98.6 5.75 1.63m.25-13.054A8.967 8.967 0 0118 3.75c1.036 0 2.04.186 3 .534V18a10.5 10.5 0 00-3-.534c-2.032 0-3.98.6-5.75 1.63m0-13.054v13.054" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800">Vocabulary</h2>
+        </div>
+
+        <!-- Vocabulary Grid -->
+        {% if vocab_list %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {% for word in vocab_list %}
+            <div class="word-card bg-indigo-50 rounded-lg p-3 hover:shadow-sm border border-indigo-100">
+                <div class="flex justify-between items-start gap-3">
+                    <p class="lesson-text font-semibold text-indigo-700 text-sm flex-1">
+                        {{ word }}
+                    </p>
+
+                    <div class="flex gap-1 flex-shrink-0">
+                        <!-- Speak Button -->
+                        <button onclick="handleSpeak(this)" class="p-1.5 hover:bg-indigo-100 rounded-lg" title="Listen">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-4 h-4 text-indigo-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                            </svg>
+                        </button>
+
+                        <!-- Translate Button -->
+                        <button onclick="handleTranslate(this)" class="p-1.5 hover:bg-indigo-100 rounded-lg"
+                            title="Translate">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-4 h-4 text-indigo-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <p class="translation hidden mt-2 text-xs text-gray-700 bg-white rounded-lg p-2 border border-gray-200">
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <p class="text-gray-400 text-sm">No vocabulary added</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Expressions Section -->
+    <section class="bg-white rounded-lg border border-gray-200 p-5 mb-6">
+
+        <!-- Section Header -->
+        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
+            <div class="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5 text-green-600">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800">Expressions</h2>
+        </div>
+
+        <!-- Expressions List -->
+        {% if expressions_list %}
+        <div class="space-y-3">
+            {% for exp in expressions_list %}
+            <div class="word-card bg-gray-50 rounded-lg p-3 hover:shadow-sm border border-gray-200">
+                <div class="flex justify-between items-start gap-3">
+                    <p class="lesson-text text-gray-800 text-sm flex-1">
+                        {{ exp }}
+                    </p>
+
+                    <div class="flex gap-1 flex-shrink-0">
+                        <!-- Speak Button -->
+                        <button onclick="handleSpeak(this)" class="p-1.5 hover:bg-gray-200 rounded-lg" title="Listen">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-4 h-4 text-gray-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                            </svg>
+                        </button>
+
+                        <!-- Translate Button -->
+                        <button onclick="handleTranslate(this)" class="p-1.5 hover:bg-gray-200 rounded-lg"
+                            title="Translate">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-4 h-4 text-gray-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <p class="translation hidden mt-2 text-xs text-gray-700 bg-white rounded-lg p-2 border border-gray-200">
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <p class="text-gray-400 text-sm">No expressions added</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Notes Section -->
+    <section class="bg-white rounded-lg border border-gray-200 p-5 mb-6">
+
+        <!-- Section Header -->
+        <div class="flex items-center gap-2 mb-4 pb-3 border-b border-gray-200">
+            <div class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5 text-amber-600">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-800">Notes</h2>
+        </div>
+
+        <!-- Notes List -->
+        {% if notes_list %}
+        <div class="space-y-3">
+            {% for note in notes_list %}
+            <div class="bg-amber-50 rounded-lg p-4 border-l-4 border-amber-400 text-sm text-gray-800">
+                {{ note }}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <p class="text-gray-400 text-sm">No notes added</p>
+        </div>
+        {% endif %}
+    </section>
+</div>
+
+<div id="quizModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50">
+    <div class="bg-white w-full max-w-xl rounded-xl p-6 relative">
+
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Quick Quiz</h2>
+
+        <div id="quizContent" class="space-y-4 text-sm"></div>
+
+        <button onclick="closeQuizModal()"
+            class="mt-6 w-full bg-gray-200 py-2 rounded-lg font-medium hover:bg-gray-300">
+            Close
+        </button>
+    </div>
+</div>
+
+
+<!-- JavaScript -->
+<script>
+    function getSelectedOrFullText(button) {
+        const selectedText = window.getSelection().toString().trim();
+
+        if (selectedText.length > 0) {
+            return selectedText;
+        }
+
+        const card = button.closest(".word-card");
+        return card.querySelector(".lesson-text").innerText.trim();
+    }
+
+    function handleSpeak(button) {
+        const text = getSelectedOrFullText(button);
+
+        if (!text) return;
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "en-US";
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utterance);
+    }
+
+    async function handleTranslate(button) {
+        const text = getSelectedOrFullText(button);
+        if (!text) return;
+
+        const card = button.closest(".word-card");
+        const translationEl = card.querySelector(".translation");
+
+        const lastText = translationEl.dataset.text;
+
+        if (lastText === text && !translationEl.classList.contains("hidden")) {
+            translationEl.classList.add("hidden");
+            return;
+        }
+
+        translationEl.dataset.text = text;
+        translationEl.textContent = "Translating...";
+        translationEl.classList.remove("hidden");
+
+        try {
+            const response = await fetch("/translate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text })
+            });
+
+            const data = await response.json();
+            translationEl.textContent = data.translation || "Translation not available";
+        } catch (error) {
+            translationEl.textContent = "Translation failed. Please try again.";
+        }
+    }
+
+    function submitQuickQuiz() {
+
+        const vocab = [...document.querySelectorAll(".word-card .lesson-text")]
+            .map(el => el.innerText.trim());
+
+        const notes = [...document.querySelectorAll(".bg-amber-50")]
+            .map(el => el.innerText.trim());
+
+        let content = "";
+
+        if (vocab.length) {
+            content += "Vocabulary:\n";
+            vocab.forEach(w => content += "- " + w + "\n");
+        }
+
+        if (notes.length) {
+            content += "\nNotes:\n";
+            notes.forEach(n => content += "- " + n + "\n");
+        }
+
+        if (!content.trim()) {
+            alert("No content to generate quiz");
+            return;
+        }
+
+        document.getElementById("quizContent").value = content;
+        document.getElementById("loadingOverlay").classList.remove("hidden");
+        document.getElementById("quickQuizForm").submit();
+    }
+
+
+</script>
+{% endblock %}
